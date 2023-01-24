@@ -26,14 +26,13 @@ import com.ibm.wala.classLoader.IMethod;
 import com.ibm.wala.classLoader.JarFileModule;
 import com.ibm.wala.classLoader.Language;
 import com.ibm.wala.client.AbstractAnalysisEngine;
-import com.ibm.wala.examples.util.ExampleUtil;
+import com.ibm.wala.examples.util.MyUtil;
 import com.ibm.wala.ipa.callgraph.AnalysisOptions;
 import com.ibm.wala.ipa.callgraph.CGNode;
 import com.ibm.wala.ipa.callgraph.CallGraph;
 import com.ibm.wala.ipa.callgraph.CallGraphBuilder;
 import com.ibm.wala.ipa.callgraph.Entrypoint;
 import com.ibm.wala.ipa.callgraph.IAnalysisCacheView;
-import com.ibm.wala.ipa.callgraph.impl.Util;
 import com.ibm.wala.ipa.callgraph.propagation.HeapModel;
 import com.ibm.wala.ipa.callgraph.propagation.InstanceKey;
 import com.ibm.wala.ipa.callgraph.propagation.PointerAnalysis;
@@ -95,7 +94,7 @@ public class SimpleThreadEscapeAnalysis extends AbstractAnalysisEngine {
   @Override
   protected CallGraphBuilder getCallGraphBuilder(
           IClassHierarchy cha, AnalysisOptions options, IAnalysisCacheView cache) {
-    return Util.makeZeroCFABuilder(Language.JAVA, options, cache, cha, scope);
+    return com.ibm.wala.ipa.callgraph.impl.Util.makeZeroCFABuilder(Language.JAVA, options, cache, cha, scope);
   }
 
   /**
@@ -185,7 +184,7 @@ public class SimpleThreadEscapeAnalysis extends AbstractAnalysisEngine {
     buildAnalysisScope();
 
     // update exclusions
-    ExampleUtil.addDefaultExclusions(scope);
+    MyUtil.addDefaultExclusions(scope);
 
     //
     // ...and the class hierarchy
@@ -197,7 +196,7 @@ public class SimpleThreadEscapeAnalysis extends AbstractAnalysisEngine {
     //
     // entrypoints are where analysis starts
     //
-    Iterable<Entrypoint> roots = Util.makeMainEntrypoints(getScope(), cha, applicationMainClass);
+    Iterable<Entrypoint> roots = com.ibm.wala.ipa.callgraph.impl.Util.makeMainEntrypoints(getScope(), cha, applicationMainClass);
 
     //
     // analysis options controls aspects of call graph construction

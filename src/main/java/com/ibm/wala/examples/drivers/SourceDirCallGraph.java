@@ -19,6 +19,7 @@ import com.ibm.wala.ipa.callgraph.CallGraphStats;
 import com.ibm.wala.ipa.callgraph.Entrypoint;
 import com.ibm.wala.ipa.callgraph.IAnalysisCacheView;
 import com.ibm.wala.ipa.callgraph.impl.Util;
+import com.ibm.wala.ipa.callgraph.propagation.PointerAnalysis;
 import com.ibm.wala.ipa.cha.ClassHierarchyException;
 import com.ibm.wala.ipa.cha.ClassHierarchyFactory;
 import com.ibm.wala.ipa.cha.IClassHierarchy;
@@ -114,6 +115,7 @@ public class SourceDirCallGraph {
     System.out.println("building call graph...");
     CallGraph cg = builder.makeCallGraph(options, null);
     long end = System.currentTimeMillis();
+    PointerAnalysis<?> pa = builder.getPointerAnalysis();
 
     processor.process(cg, builder, end - start);
   }

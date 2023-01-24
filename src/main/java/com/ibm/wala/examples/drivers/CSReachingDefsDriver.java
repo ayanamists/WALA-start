@@ -5,28 +5,21 @@ import java.util.Properties;
 
 import com.ibm.wala.core.util.config.AnalysisScopeReader;
 import com.ibm.wala.core.util.warnings.Warnings;
-import com.ibm.wala.dataflow.IFDS.ISupergraph;
-import com.ibm.wala.dataflow.IFDS.TabulationResult;
 import com.ibm.wala.examples.analysis.dataflow.ContextSensitiveReachingDefs;
-import com.ibm.wala.examples.util.ExampleUtil;
+import com.ibm.wala.examples.util.MyUtil;
 import com.ibm.wala.ipa.callgraph.AnalysisCache;
 import com.ibm.wala.ipa.callgraph.AnalysisCacheImpl;
 import com.ibm.wala.ipa.callgraph.AnalysisOptions;
 import com.ibm.wala.ipa.callgraph.AnalysisOptions.ReflectionOptions;
 import com.ibm.wala.ipa.callgraph.AnalysisScope;
-import com.ibm.wala.ipa.callgraph.CGNode;
 import com.ibm.wala.ipa.callgraph.CallGraph;
 import com.ibm.wala.ipa.callgraph.CallGraphBuilder;
 import com.ibm.wala.ipa.callgraph.CallGraphBuilderCancelException;
 import com.ibm.wala.ipa.callgraph.CallGraphStats;
 import com.ibm.wala.ipa.callgraph.Entrypoint;
-import com.ibm.wala.ipa.callgraph.impl.Util;
-import com.ibm.wala.ipa.cfg.BasicBlockInContext;
 import com.ibm.wala.ipa.cha.ClassHierarchyException;
 import com.ibm.wala.ipa.cha.ClassHierarchyFactory;
 import com.ibm.wala.ipa.cha.IClassHierarchy;
-import com.ibm.wala.ssa.analysis.IExplodedBasicBlock;
-import com.ibm.wala.util.collections.Pair;
 import com.ibm.wala.util.io.CommandLine;
 
 
@@ -58,19 +51,19 @@ public class CSReachingDefsDriver {
 	      throw new IllegalArgumentException("must specify main class");
 	    }
 	    AnalysisScope scope = AnalysisScopeReader.instance.readJavaScope(scopeFile, null, CSReachingDefsDriver.class.getClassLoader());
-	    ExampleUtil.addDefaultExclusions(scope);
+	    MyUtil.addDefaultExclusions(scope);
 	    IClassHierarchy cha = ClassHierarchyFactory.make(scope);
 	    System.out.println(cha.getNumberOfClasses() + " classes");
 	    System.out.println(Warnings.asString());
 	    Warnings.clear();
 	    AnalysisOptions options = new AnalysisOptions();
-	    Iterable<Entrypoint> entrypoints = Util.makeMainEntrypoints(cha, mainClass);
+	    Iterable<Entrypoint> entrypoints = com.ibm.wala.ipa.callgraph.impl.Util.makeMainEntrypoints(cha, mainClass);
 	    options.setEntrypoints(entrypoints);
 	    // you can dial down reflection handling if you like
 	    options.setReflectionOptions(ReflectionOptions.NONE);
 	    AnalysisCache cache = new AnalysisCacheImpl();
 	    // other builders can be constructed with different Util methods
-	    CallGraphBuilder builder = Util.makeZeroOneContainerCFABuilder(options, cache, cha);
+	    CallGraphBuilder builder = com.ibm.wala.ipa.callgraph.impl.Util.makeZeroOneContainerCFABuilder(options, cache, cha);
 //	    CallGraphBuilder builder = Util.makeNCFABuilder(2, options, cache, cha, scope);
 //	    CallGraphBuilder builder = Util.makeVanillaNCFABuilder(2, options, cache, cha, scope);
 	    System.out.println("building call graph...");
@@ -81,9 +74,9 @@ public class CSReachingDefsDriver {
 	    System.out.println("took " + (end-start) + "ms");
 	    System.out.println(CallGraphStats.getStats(cg));
 	    
-	    ContextSensitiveReachingDefs reachingDefs = new ContextSensitiveReachingDefs(cg, cache);
-	    TabulationResult<BasicBlockInContext<IExplodedBasicBlock>, CGNode, Pair<CGNode, Integer>> result = reachingDefs.analyze();
-	    ISupergraph<BasicBlockInContext<IExplodedBasicBlock>, CGNode> supergraph = reachingDefs.getSupergraph();
+	    // ContextSensitiveReachingDefs reachingDefs = new ContextSensitiveReachingDefs(cg, cache);
+	    // TabulationResult<BasicBlockInContext<IExplodedBasicBlock>, CGNode, Pair<CGNode, Integer>> result = reachingDefs.analyze();
+	    // ISupergraph<BasicBlockInContext<IExplodedBasicBlock>, CGNode> supergraph = reachingDefs.getSupergraph();
 
 	    // TODO print out some analysis results
 	}

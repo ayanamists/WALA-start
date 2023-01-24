@@ -14,7 +14,7 @@ gradle_cmd_args = [
     "-PappArgs=[" + java_app_args + "]"
     ]
 
-print " ".join(gradle_cmd_args)
+print(" ".join(gradle_cmd_args))
 
 subprocess.call(gradle_cmd_args)
 

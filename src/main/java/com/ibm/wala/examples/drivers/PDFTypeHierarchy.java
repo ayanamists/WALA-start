@@ -18,7 +18,7 @@ import java.util.function.Predicate;
 import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.core.util.config.AnalysisScopeReader;
 import com.ibm.wala.core.viz.PDFViewUtil;
-import com.ibm.wala.examples.util.ExampleUtil;
+import com.ibm.wala.examples.util.MyUtil;
 import com.ibm.wala.ipa.callgraph.AnalysisScope;
 import com.ibm.wala.ipa.cha.ClassHierarchy;
 import com.ibm.wala.ipa.cha.ClassHierarchyFactory;
@@ -52,7 +52,7 @@ public class PDFTypeHierarchy {
       validateCommandLine(args);
       String classpath = args[CLASSPATH_INDEX];
       AnalysisScope scope = AnalysisScopeReader.instance.makeJavaBinaryAnalysisScope(classpath, null);
-      ExampleUtil.addDefaultExclusions(scope);
+      MyUtil.addDefaultExclusions(scope);
 
       // invoke WALA to build a class hierarchy
       ClassHierarchy cha = ClassHierarchyFactory.make(scope);
