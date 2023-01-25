@@ -16,11 +16,23 @@ import com.ibm.wala.ssa.*;
 import com.ibm.wala.types.FieldReference;
 import com.ibm.wala.util.collections.EmptyIterator;
 
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 public class ForNameInterpreter implements SSAContextInterpreter {
 
+    Set<CGNode> knownNodes;
+
+    public ForNameInterpreter() {
+        knownNodes = new HashSet<>();
+    }
+
     public IR getIR(CGNode node) {
+        if (knownNodes.contains(node)) {
+            return null;
+        }
+        knownNodes.add(node);
         Context c = node.getContext();
 
         PointerKey def = (PointerKey)

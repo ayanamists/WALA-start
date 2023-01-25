@@ -29,7 +29,8 @@ public class SolarSelector {
                     }
                 };
 
-        result = new DelegatingContextSelector(new ForNameContextSelector(), result);
+        result = new DelegatingContextSelector(new GetMethodContextSelector(),
+                new DelegatingContextSelector(new ForNameContextSelector(), result));
         return result;
     }
 

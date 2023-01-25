@@ -35,6 +35,7 @@ import com.ibm.wala.util.io.CommandLine;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Properties;
 
 /**
@@ -83,7 +84,7 @@ public class ScopeFileCallGraph {
         System.out.println(i.getMethod().getDescriptor());
         System.out.println(i.getIR());
         OrdinalSet<? extends InstanceKey> pts =
-                pa.getPointsToSet(hm.getPointerKeyForLocal(i, 11));
+                pa.getPointsToSet(hm.getPointerKeyForLocal(i, 13));
         System.out.println(pts);
       }
     }

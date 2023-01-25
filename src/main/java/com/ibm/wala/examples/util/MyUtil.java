@@ -7,6 +7,8 @@ import java.io.UnsupportedEncodingException;
 import com.ibm.wala.examples.solar.Solar;
 import com.ibm.wala.ipa.callgraph.AnalysisScope;
 import com.ibm.wala.ipa.callgraph.CGNode;
+import com.ibm.wala.ipa.callgraph.Context;
+import com.ibm.wala.ipa.callgraph.ContextItem;
 import com.ibm.wala.ipa.callgraph.propagation.HeapModel;
 import com.ibm.wala.ipa.callgraph.propagation.PointerKey;
 import com.ibm.wala.types.ClassLoaderReference;
@@ -46,5 +48,9 @@ public class MyUtil {
 	public static PointerKey getPointerKey(CGNode node, int idx) {
 		return Solar.get().getBuilder().getPointerKeyForLocal(node, idx);
 	}
-	  
+
+	@SuppressWarnings("unchecked")
+	public static <T> T getValue(ContextItem t) {
+		return ((ContextItem.Value<T>) t).getValue();
+	}
 }
