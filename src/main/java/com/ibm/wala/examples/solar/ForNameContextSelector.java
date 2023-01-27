@@ -85,24 +85,28 @@ public class ForNameContextSelector implements ContextSelector {
             if (invokeInstructions.length != 1) {
                 return null;
             }
+            PointerKey def = null;
+            if (invokeInstructions[0].hasDef()) {
+                int d = invokeInstructions[0].getDef();
+                def = getPointerKey(caller, d);
+            }
             int use = getUseOfStringParameter(invokeInstructions[0]);
-            if (symbolTable.isStringConstant(use)) {
-                String className =
-                        StringStuff.deployment2CanonicalTypeString(symbolTable.getStringValue(use));
-                TypeReference t =
-                        TypeReference.findOrCreate(
-                                caller.getMethod().getDeclaringClass().getClassLoader().getReference(), className);
-                IClass klass = caller.getClassHierarchy().lookupClass(t);
-                PointerKey def = null;
-                if (invokeInstructions[0].hasDef()) {
-                    int d = invokeInstructions[0].getDef();
-                    def = getPointerKey(caller, d);
-                }
-                if (klass != null) {
-                    return new ForNameContext(klass, def);
-                } else {
-                    return new ForNameContext(null, def);
-                }
+
+            if (! caller.getIR().getSymbolTable().isConstant(use)) {
+                return new ForNameContext(null, def);
+            }
+
+            String className =
+                    StringStuff.deployment2CanonicalTypeString(symbolTable.getStringValue(use));
+            TypeReference t =
+                    TypeReference.findOrCreate(
+                            caller.getMethod().getDeclaringClass().getClassLoader().getReference(), className);
+            IClass klass = caller.getClassHierarchy().lookupClass(t);
+
+            if (klass != null) {
+                return new ForNameContext(klass, def);
+            } else {
+                return new ForNameContext(null, def);
             }
         }
         return null;

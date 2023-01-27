@@ -59,8 +59,7 @@ public class ForNameInterpreter implements SSAContextInterpreter {
         if (node == null) {
             throw new IllegalArgumentException("node is null");
         } else {
-            return node.getContext().isA(ForNameContext.class) &&
-                    ClassFactoryContextSelector.isClassFactory(node.getMethod().getReference());
+            return node.getContext().isA(ForNameContext.class);
         }
     }
 

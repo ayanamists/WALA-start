@@ -82,8 +82,9 @@ public class SolarInterpreter {
                     }
                 };
 
-        result = new DelegatingSSAContextInterpreter(new GetMethodContextInterpreter(),
-                    new DelegatingSSAContextInterpreter(new ForNameInterpreter(), result));
+        result = new DelegatingSSAContextInterpreter(new InvokeInterpreter(),
+                new DelegatingSSAContextInterpreter(new GetMethodContextInterpreter(),
+                    new DelegatingSSAContextInterpreter(new ForNameInterpreter(), result)));
         return result;
     }
 

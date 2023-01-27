@@ -11,6 +11,14 @@ jar {
     }
 }
 
+test {
+    maxHeapSize = '1G'
+
+    testLogging {
+        events "passed"
+    }
+}
+
 repositories {
     mavenCentral()
 }
@@ -30,7 +38,7 @@ dependencies {
     implementation "com.ibm.wala:com.ibm.wala.cast.java.ecj:${walaVersion}"
     implementation "com.ibm.wala:com.ibm.wala.dalvik:${walaVersion}"
     implementation "com.ibm.wala:com.ibm.wala.scandroid:${walaVersion}"
-    testImplementation group: 'junit', name: 'junit', version: '4.+'
+    testImplementation 'junit:junit:4.13'
 }
 
 if (project.hasProperty('mainClass')) {

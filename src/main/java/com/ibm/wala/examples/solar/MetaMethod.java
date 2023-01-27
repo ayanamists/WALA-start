@@ -21,13 +21,18 @@ public class MetaMethod implements InstanceKey {
         return signature;
     }
 
-    final IClass declType;
+    IClass declType;
 
-    final MethodSig signature;
+    MethodSig signature;
 
     public MetaMethod(IClass declType, MethodSig signature) {
         this.declType = declType;
         this.signature = signature;
+    }
+
+    public MetaMethod(MetaMethod m) {
+        this.declType = m.declType;
+        this.signature = m.signature;
     }
 
     @Override

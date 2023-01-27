@@ -5,7 +5,10 @@ import com.ibm.wala.classLoader.IMethod;
 import com.ibm.wala.ipa.callgraph.CGNode;
 import com.ibm.wala.ipa.callgraph.Context;
 import com.ibm.wala.ipa.callgraph.ContextSelector;
+import com.ibm.wala.ipa.callgraph.propagation.AllocationSite;
+import com.ibm.wala.ipa.callgraph.propagation.AllocationSiteInNode;
 import com.ibm.wala.ipa.callgraph.propagation.InstanceKey;
+import com.ibm.wala.ipa.callgraph.propagation.PointerKey;
 import com.ibm.wala.ssa.IR;
 import com.ibm.wala.ssa.SSAAbstractInvokeInstruction;
 import com.ibm.wala.ssa.SymbolTable;
@@ -13,6 +16,7 @@ import com.ibm.wala.types.MethodReference;
 import com.ibm.wala.types.TypeReference;
 import com.ibm.wala.util.intset.EmptyIntSet;
 import com.ibm.wala.util.intset.IntSet;
+import com.ibm.wala.util.intset.OrdinalSet;
 
 import java.util.HashSet;
 import java.util.List;
@@ -44,26 +48,42 @@ public class GetMethodContextSelector implements ContextSelector {
     public Context getCalleeTarget(
             CGNode caller, CallSiteReference site, IMethod callee, InstanceKey[] receiver) {
         if (set.contains(callee.getReference())) {
+            boolean isMethods = callee.getReference().equals(GET_METHODS);
             IR ir = caller.getIR();
-            SymbolTable symbolTable = ir.getSymbolTable();
             SSAAbstractInvokeInstruction[] invokeInstructions = caller.getIR().getCalls(site);
             if (invokeInstructions.length != 1) {
                 return null;
             }
             int r = invokeInstructions[0].getReceiver();
-            int use = invokeInstructions[0].getUse(1);
-            String sym = null;
-            if (symbolTable.isStringConstant(invokeInstructions[0].getUse(1))) {
-                sym = symbolTable.getStringValue(use);
-            }
+            int use = isMethods ? 0 : invokeInstructions[0].getUse(1);
             GetMethodContext c = new GetMethodContext(
                     getPointerKey(caller, r),
-                    invokeInstructions[0].hasDef() ? getPointerKey(caller, invokeInstructions[0].getDef()) : null,
-                    sym,
+                    invokeInstructions[0].hasDef() ?
+                            getDef(caller, invokeInstructions[0].getDef(), isMethods) : null,
+                    callee.getReference().equals(GET_METHODS) ? null : getPointerKey(caller, use),
                     callee.getReference().equals(GET_METHODS));
             return c;
         }
         return null;
+    }
+
+    PointerKey getDef(CGNode caller, int def, boolean isGetMethods) {
+        if (! isGetMethods) {
+            return getPointerKey(caller, def);
+        } else {
+            PointerKey arr = getPointerKey(caller, def);
+            OrdinalSet<InstanceKey> set = Solar.get().builder.getPointerAnalysis().getPointsToSet(arr);
+            if (set.isEmpty()) {
+                InstanceKey k = new AllocationSite(caller.getMethod(),
+                        null, Solar.get().builder.cha.lookupClass(
+                        TypeReference.findOrCreateArrayOf(TypeReference.JavaLangObject)));
+                Solar.get().builder.getSystem().newConstraint(arr, k);
+                set = Solar.get().builder.getPointerAnalysis().getPointsToSet(arr);
+            }
+            PointerKey content = Solar.get().builder
+                    .getPointerKeyForArrayContents(set.iterator().next());
+            return content;
+        }
     }
 
     @Override

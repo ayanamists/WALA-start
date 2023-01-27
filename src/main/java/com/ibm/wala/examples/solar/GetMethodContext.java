@@ -23,14 +23,14 @@ public class GetMethodContext implements Context {
 
     final PointerKey def;
 
-    final String name;
+    final PointerKey use;
 
     final boolean all;
 
-    public GetMethodContext(PointerKey r, PointerKey def, String name, boolean all) {
+    public GetMethodContext(PointerKey r, PointerKey def, PointerKey use, boolean all) {
         this.r = r;
         this.def = def;
-        this.name = name;
+        this.use = use;
         this.all = all;
     }
 
@@ -41,7 +41,7 @@ public class GetMethodContext implements Context {
         } else if (name == Def.instance) {
             return Value.make(def);
         } else if (name == MethodName.instance) {
-            return Value.make(this.name);
+            return Value.make(this.use);
         } else if (name == GetMethods.instance) {
             return Value.make(all);
         } else {

@@ -25,14 +25,12 @@ import java.util.Iterator;
 
 public class GetMethodContextInterpreter implements SSAContextInterpreter {
 
-    MultiMap<PointerKey, InstanceKey> map = new ArraySetMultiMap<>();
-
     @Override
     public IR getIR(CGNode node) {
         Context c = node.getContext();
         PointerKey def = getValue(c.get(Def.instance));
         PointerKey r = getValue(c.get(ContextKey.RECEIVER));
-        String s = getValue(c.get(MethodName.instance));
+        PointerKey use = getValue(c.get(MethodName.instance));
         boolean isGetMethods = getValue(c.get(GetMethods.instance));
 
         if (def != null) {
@@ -52,14 +50,32 @@ public class GetMethodContextInterpreter implements SSAContextInterpreter {
                     klass = mc.type;
                 }
 
-                if (s != null) {
-                    sig = new MethodSig(null, null, s);
+                if (isGetMethods) {
+                    Solar.get().addToPts(def, new MetaMethod(klass, null));
+                    continue;
                 }
 
-                MetaMethod method = new MetaMethod(klass, sig);
-                if ( !map.get(def).contains(method) ) {
-                    map.put(def, method);
-                    Solar.get().getBuilder().getSystem().newConstraint(def, method);
+                OrdinalSet<InstanceKey> ptStr = Solar.get().builder.getPointerAnalysis().getPointsToSet(use);
+
+                if(ptStr.isEmpty()) {
+                    Solar.get().builder.getSystem().newConstraint(def, new MetaMethod(klass, null));
+                    continue;
+                }
+
+                for (InstanceKey j : ptStr) {
+                    String s = null;
+                    if (j instanceof ConstantKey) {
+                        ConstantKey<?> sc = (ConstantKey<?>) j;
+                        s = (String) sc.getValue();
+                    }
+
+                    if (s != null) {
+                        sig = new MethodSig(null, null, s);
+                    }
+
+                    MetaMethod method = new MetaMethod(klass, sig);
+                    Solar.get().addToPts(def, method);
+
                 }
             }
         }

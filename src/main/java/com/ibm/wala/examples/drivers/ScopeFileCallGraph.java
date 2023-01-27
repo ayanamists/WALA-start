@@ -80,12 +80,12 @@ public class ScopeFileCallGraph {
     HeapModel hm = pa.getHeapModel();
 
     for (CGNode i : cg) {
-      if (i.getMethod().getName().toString().equals("forName") && isApplication(i)) {
-        System.out.println(i.getMethod().getDescriptor());
-        System.out.println(i.getIR());
+      if (isApplication(i)) {
+        //System.out.println(i.getMethod().getDescriptor());
+        //System.out.println(i.getIR());
         OrdinalSet<? extends InstanceKey> pts =
-                pa.getPointsToSet(hm.getPointerKeyForLocal(i, 13));
-        System.out.println(pts);
+                pa.getPointsToSet(hm.getPointerKeyForLocal(i, 6));
+        //System.out.println(pts);
       }
     }
   }
