@@ -24,6 +24,7 @@ import com.ibm.wala.ipa.callgraph.impl.Everywhere;
 import com.ibm.wala.ipa.cha.ClassHierarchy;
 import com.ibm.wala.ipa.cha.ClassHierarchyException;
 import com.ibm.wala.ipa.cha.ClassHierarchyFactory;
+import com.ibm.wala.ssa.IR;
 import com.ibm.wala.util.perf.Stopwatch;
 
 /**
@@ -73,14 +74,20 @@ public class ConstructAllIRs {
     ReferenceCleanser.registerCache(cache);
 
     System.out.print("building IRs...");
+    int i = 0;
     for (IClass klass : cha) {
-      for (IMethod method : klass.getDeclaredMethods()) {
-        wipeSoftCaches();
-        // construct an IR; it will be cached
-        cache.getIR(method, Everywhere.EVERYWHERE);
+      if (klass.getName().getClassName().toString().equals("Merge")) {
+        for (IMethod method : klass.getDeclaredMethods()) {
+          wipeSoftCaches();
+          // construct an IR; it will be cached
+          IR ir = cache.getIR(method, Everywhere.EVERYWHERE);
+          System.out.println(ir);
+        }
+        // System.out.println("now: " + i++);
+        i++;
       }
     }
-    System.out.println("done");
+    System.out.println("done: " + i);
     s.stop();
     System.out.println("RUNNING TIME: " + s.getElapsedMillis());
 
